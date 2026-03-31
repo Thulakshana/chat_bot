@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AI Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #chat-box { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; margin-bottom: 10px; }
+        .user { color: blue; }
+        .bot { color: green; }
+        input[type=text] { width: 80%; padding: 10px; }
+        button { padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>AI Chatbot</h1>
+    <div id="chat-box"></div>
+    <input type="text" id="message" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        function sendMessage() {
+            const message = document.getElementById('message').value;
+            if (!message) return;
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<div class="user"><strong>You:</strong> ${message}</div>`;
+
+            fetch('/chat', {
+                method: 'POST',
+                body: new URLSearchParams({ 'message': message }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatBox.innerHTML += `<div class="bot"><strong>Bot:</strong> ${data.reply}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                chatBox.innerHTML += `<div class="bot"><strong>Bot:</strong> Error occurred</div>`;
+            });
+
+            document.getElementById('message').value = '';
+        }
+    </script>
+</body>
+</html>
